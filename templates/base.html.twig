@@ -1,17 +1,141 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}AllGames{% endblock %}</title>
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+    <link rel="icon" href="data:image/svg+xml,
+    <svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22>
+    <text y=%221.2em%22 font-size=%2296%22>🎮</text></svg>">
+
+    {% block stylesheets %}{% endblock %}
+    {% block javascripts %}
+        {% block importmap %}{{ importmap('app') }}{% endblock %}
+    {% endblock %}
+</head>
+
+<body class="min-h-screen flex flex-col bg-[#0f172a] text-gray-200">
+
+<header class="bg-[#0b1220] border-b border-white/10">
+    <div class="container mx-auto flex items-center justify-between px-6 py-3">
+
+        <!-- LEFT : Logo + Menu -->
+        <div class="flex items-center gap-10">
+            <a href="{{ path('app_home') }}">
+                <img src="{{ asset('images/logo-all-games.svg') }}"
+                     alt="AllGames"
+                     class="h-9 w-auto">
+            </a>
+
+            <nav class="flex items-center gap-6 text-sm">
+                <a href="{{ path('app_home') }}" class="hover:text-blue-400 transition">Home</a>
+                <a href="{{ path('app_game_index') }}" class="hover:text-blue-400 transition">Games</a>
+                <a href="{{ path('app_about') }}" class="hover:text-blue-400 transition">About</a>
+
+                {% if app.user %}
+                    <a href="{{ path('app_wishlist') }}" class="hover:text-blue-400 transition">Wishlist</a>
+                {% endif %}
+            </nav>
+        </div>
+
+        <!-- RIGHT : Search + Admin + Login/Logout -->
+        <div class="flex items-center gap-4">
+
+            <!-- SEARCH -->
+            <form method="get"
+                  action="{{ path('app_game_index') }}"
+                  class="flex items-center gap-2">
+
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ app.request.query.get('q') }}"
+                    placeholder="Search"
+                    class="bg-[#1e293b] border border-white/10 rounded-md px-4 py-2 text-sm text-white outline-none focus:border-blue-500 w-40"
+                >
+
+                <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition">
+                    OK
+                </button>
+            </form>
+
+            {# ✅ ADMIN bouton (comme sur ton image) #}
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_admin_game_index') }}"
+                   class="bg-[#1e293b] hover:bg-[#273449] text-white px-4 py-2 rounded-md text-sm font-semibold transition">
+                    Admin
+                </a>
+            {% endif %}
+
+            {% if app.user %}
+                <a href="{{ path('app_logout') }}"
+                   class="bg-[#1e293b] hover:bg-[#273449] text-white px-4 py-2 rounded-md text-sm font-semibold transition">
+                    Logout
+                </a>
+            {% else %}
+                <a href="{{ path('app_login') }}"
+                   class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition">
+                    Login
+                </a>
+            {% endif %}
+
+        </div>
+    </div>
+</header>
+
+<main class="flex-1 bg-[#0f172a]">
+    {% block body %}{% endblock %}
+</main>
+
+<footer class="bg-[#0b1220] border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
+
+        <!-- Left -->
+        <div class="flex items-center gap-4">
+            <img src="{{ asset('images/logo-all-games.svg') }}"
+                 alt="AllGames"
+                 class="h-6 w-auto opacity-90">
+
+            <span class="text-sm text-gray-400">
+                © {{ "now"|date("Y") }} AllGames
+            </span>
+        </div>
+
+        <!-- Right -->
+        <div class="flex items-center gap-6 text-gray-400">
+
+            <!-- Facebook -->
+            <a href="#" class="hover:text-white transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M13.5 22v-8h2.7l.4-3H13.5V9.1c0-.9.3-1.6 1.6-1.6H16.7V4.8c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V11H7.5v3H10v8h3.5z"/>
+                </svg>
+            </a>
+
+            <!-- X -->
+            <a href="#" class="hover:text-white transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18.9 2H21l-6.6 7.6L22 22h-6.5l-5.1-6.7L4.7 22H2.6l7.1-8.2L2 2h6.7l4.6 6.1L18.9 2zm-1.1 18h1.8L7.7 3.9H5.8L17.8 20z"/>
+                </svg>
+            </a>
+
+            <!-- Instagram -->
+            <a href="#" class="hover:text-white transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm10 2H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3z"/>
+                </svg>
+            </a>
+
+            <!-- LinkedIn -->
+            <a href="#" class="hover:text-white transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M6.94 6.5a1.94 1.94 0 1 1 0-3.88 1.94 1.94 0 0 1 0 3.88zM5.5 21.5h2.9V9H5.5v12.5z"/>
+                </svg>
+            </a>
+
+        </div>
+    </div>
+</footer>
+
+</body>
 </html>

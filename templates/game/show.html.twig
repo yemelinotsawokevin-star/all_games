@@ -1,0 +1,202 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ game.title }} | AllGames{% endblock %}
+
+{% block body %}
+<div class="bg-[#0f172a]">
+    <div class="container mx-auto px-6 py-10">
+
+        {# Flash messages #}
+        {% for message in app.flashes('success') %}
+            <div class="mb-6 p-3 rounded bg-green-700/30 border border-green-500 text-green-200">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="mb-6 p-3 rounded bg-red-700/30 border border-red-500 text-red-200">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+
+            {# LEFT: image + wishlist #}
+            <div>
+                <div class="rounded-2xl overflow-hidden border border-white/10 bg-[#111b2c] shadow-lg">
+                    <div class="aspect-[16/9] bg-black/20 flex items-center justify-center">
+                        {% if game.image %}
+                            <img
+                                src="{{ asset('images/games/' ~ game.image) }}"
+                                alt="{{ game.title }}"
+                                class="w-full h-full object-cover"
+                                onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=&quot;text-gray-400&quot;>Image indisponible</div>';"
+                            >
+                        {% else %}
+                            <div class="text-gray-400">Aucune image</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    {% if app.user %}
+                        <form method="post" action="{{ path('app_wishlist_add', { id: game.id }) }}">
+                            <button class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition shadow-sm">
+                                Ajouter à la wishlist
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{{ path('app_login') }}"
+                           class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition shadow-sm">
+                            Connecte-toi pour wishlist
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# RIGHT: infos #}
+            <div class="text-gray-200">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl font-bold text-white">{{ game.title }}</h1>
+                        <p class="mt-3 text-gray-400 text-sm leading-relaxed">
+                            {{ game.description }}
+                        </p>
+                    </div>
+
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_admin_game_edit', { id: game.id }) }}"
+                           class="shrink-0 inline-flex bg-white/10 hover:bg-white/15 border border-white/10 text-white px-4 py-2 rounded-md text-sm font-semibold transition">
+                            Modifier (Admin)
+                        </a>
+                    {% endif %}
+                </div>
+
+                {# Stats row #}
+                <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
+
+                    <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                        <div class="text-white font-bold text-lg">
+                            {{ reviews is defined ? reviews|length : 0 }}
+                        </div>
+                        <div class="text-xs text-gray-400">Reviews</div>
+                    </div>
+
+                    <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                        <div class="text-white font-bold text-lg">
+                            {{ (game.price * 50)|round }}
+                        </div>
+                        <div class="text-xs text-gray-400">Downloads</div>
+                    </div>
+
+                    {# ✅ SEULE MODIFICATION ICI #}
+                    <div class="bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition duration-300">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-blue-600/20 p-3 rounded-xl">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-400 uppercase tracking-wide">Release Year</div>
+                                <div class="text-xl font-bold text-white">
+                                    {{ game.releaseYear ?? '—' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                        <div class="text-blue-300 font-extrabold text-lg">
+                            {{ game.price }} €
+                        </div>
+                        <div class="text-xs text-gray-400">Price</div>
+                    </div>
+
+                </div>
+
+                {# Category #}
+                <div class="mt-6">
+                    <div class="text-sm font-semibold text-white mb-2">Category</div>
+
+                    {% if game.category %}
+                        <span class="inline-flex items-center rounded-full bg-blue-600/20 border border-blue-500/30 px-3 py-1 text-xs text-blue-300">
+                            {{ game.category }}
+                        </span>
+                    {% else %}
+                        <span class="text-gray-400 text-sm">Aucune catégorie</span>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+
+        {# Review form #}
+        <div class="mt-10 flex justify-center">
+            <div class="w-full max-w-xl bg-white/5 border border-white/10 rounded-2xl p-6 shadow-lg">
+                <h2 class="text-white font-bold mb-4">Your review</h2>
+
+                {% if app.user %}
+                    {{ form_start(reviewForm) }}
+
+                    <div class="mb-4">
+                        {{ form_row(reviewForm.comment, {
+                            label: 'Write your review here...',
+                            attr: {
+                                class: 'w-full bg-[#111b2c] border border-white/10 rounded-md px-3 py-2 text-sm text-white outline-none focus:border-blue-500',
+                                rows: 5
+                            }
+                        }) }}
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="text-sm font-semibold text-white mb-2">Do you recommend this game?</div>
+                        {{ form_row(reviewForm.review) }}
+                    </div>
+
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition">
+                        Post review
+                    </button>
+
+                    {{ form_end(reviewForm) }}
+                {% else %}
+                    <a href="{{ path('app_login') }}"
+                       class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition">
+                        Sign in to review
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-10">
+            <h2 class="text-xl font-bold text-white mb-4">Reviews</h2>
+
+            {% if reviews is not defined or reviews|length == 0 %}
+                <p class="text-gray-400 text-sm">No reviews yet.</p>
+            {% else %}
+                <div class="space-y-3">
+                    {% for r in reviews %}
+                        <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                            <div class="flex items-center justify-between">
+                                <div class="text-sm text-gray-300">
+    Avis utilisateur
+</div>
+                                <div class="text-sm font-semibold">
+                                    {% if r.review %}
+                                        <span class="text-green-400">👍 Recommended</span>
+                                    {% else %}
+                                        <span class="text-red-400">👎 Not recommended</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <p class="mt-2 text-gray-200 text-sm">{{ r.comment }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+
+<div>
+    <label class="block text-sm font-semibold text-slate-300 mb-2 tracking-wide">
+        Title
+    </label>
+
+    {{ form_widget(form.title, {
+        'attr': {
+            'class': 'w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-500 transition'
+        }
+    }) }}
+
+    {{ form_errors(form.title) }}
+</div>
+
+<div>
+    <label class="block text-sm font-semibold text-slate-300 mb-2 tracking-wide">
+        Description
+    </label>
+
+    {{ form_widget(form.description, {
+        'attr': {
+            'rows': 5,
+            'class': 'w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-500 transition'
+        }
+    }) }}
+
+    {{ form_errors(form.description) }}
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+        <label class="block text-sm font-semibold text-slate-300 mb-2 tracking-wide">
+            Price
+        </label>
+
+        {{ form_widget(form.price, {
+            'attr': {
+                'class': 'w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-500 transition'
+            }
+        }) }}
+
+        {{ form_errors(form.price) }}
+    </div>
+
+    {% if form.imageFile is defined %}
+        <div>
+            <label class="block text-sm font-semibold text-slate-300 mb-2 tracking-wide">
+                Image (JPG / PNG / WebP)
+            </label>
+
+            {{ form_widget(form.imageFile, {
+                'attr': {
+                    'class': 'w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 transition'
+                }
+            }) }}
+
+            <p class="mt-2 text-xs text-slate-400">
+                Laisse vide si tu ne veux pas changer l’image.
+            </p>
+
+            {{ form_errors(form.imageFile) }}
+        </div>
+    {% endif %}
+</div>
+
+<div class="pt-4">
+    <button class="w-full sm:w-auto inline-flex items-center justify-center gap-2
+                   px-6 py-3 rounded-xl
+                   bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500
+                   text-white font-semibold tracking-wide
+                   shadow-lg shadow-purple-500/30
+                   hover:scale-[1.02] hover:shadow-xl
+                   active:scale-[0.98]
+                   transition-all duration-200">
+        {{ button_label|default('Save') }}
+    </button>
+</div>
+
+{{ form_end(form) }}

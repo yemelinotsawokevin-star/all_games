@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Wishlist | AllGames{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-6 py-10">
+
+    <h1 class="text-3xl font-bold mb-8 text-white">Ma wishlist</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="mb-4 p-3 rounded bg-green-700/30 border border-green-500 text-green-200">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for game in games %}
+            <div class="bg-[#1e293b] border border-white/10 rounded-lg p-6">
+                <h2 class="text-xl font-semibold text-white mb-2">{{ game.title }}</h2>
+                <p class="text-gray-300 text-sm mb-4">
+                    {{ game.description|slice(0, 90) }}{% if game.description|length > 90 %}...{% endif %}
+                </p>
+                <p class="text-blue-400 font-bold mb-4">{{ game.price }} €</p>
+
+                <form method="post" action="{{ path('app_wishlist_remove', {id: game.id}) }}">
+                    <button class="bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-md font-semibold transition">
+                        Retirer
+                    </button>
+                </form>
+            </div>
+        {% else %}
+            <p class="text-gray-400">Ta wishlist est vide.</p>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
